@@ -2,19 +2,26 @@ package com.example.defensecommander;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private int screenWidth;
     private int screenHeight;
-    private final ArrayList<ParallaxBackground> parallaxBackgrounds = new ArrayList<>();
+    private CloudScroller cloudScroller;
+    private List<Base> bases = new ArrayList<>();
+    private ViewGroup layout;
+    private MissileMaker missileMaker;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,9 +29,46 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getScreenDimensions();
 
-        ViewGroup viewGroup = findViewById(R.id.constraintLayout);
-        parallaxBackgrounds.add(
-                new ParallaxBackground(this, viewGroup, 60000, screenWidth, screenHeight));
+        layout = findViewById(R.id.constraintLayout);
+        cloudScroller = new CloudScroller(
+                this, layout, 60000, screenWidth, screenHeight);
+        layout.setOnTouchListener((view, motionEvent) -> {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                handleTouch(motionEvent.getX(), motionEvent.getY());
+            }
+            return false;
+        });
+
+        createBases();
+
+        missileMaker = new MissileMaker(this);
+        new Thread(missileMaker).start();
+    }
+
+    public ViewGroup getLayout() {
+        return layout;
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
+    }
+
+    public MissileMaker getMissileMaker() {
+        return missileMaker;
+    }
+
+    private void createBases() {
+        bases.add(new Base(findViewById(R.id.baseLeft)));
+        bases.add(new Base(findViewById(R.id.baseCenter)));
+        bases.add(new Base(findViewById(R.id.baseRight)));
+    }
+
+    private void handleTouch(float x, float y) {
+        // todo
     }
 
     private void getScreenDimensions() {
@@ -50,7 +94,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        for (ParallaxBackground background : parallaxBackgrounds)
-            background.stop();
+        cloudScroller.stop();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SoundPlayer.getInstance().stopSound(getString(R.string.background_sound));
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        SoundPlayer.getInstance().startSound(getString(R.string.background_sound));
     }
 }

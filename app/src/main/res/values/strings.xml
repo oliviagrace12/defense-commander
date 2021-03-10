@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Defense Commander</string>
+    <string name="background_sound">background</string>
 </resources>

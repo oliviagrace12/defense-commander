@@ -9,7 +9,7 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/baseRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -43,7 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/baseLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -53,7 +53,7 @@
         app:srcCompat="@drawable/base" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/baseCenter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

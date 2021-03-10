@@ -8,7 +8,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-public class ParallaxBackground implements Runnable {
+public class CloudScroller implements Runnable {
 
     private final Context context;
     private final ViewGroup layout;
@@ -21,8 +21,8 @@ public class ParallaxBackground implements Runnable {
     private ImageView cloudsImageViewB;
 
 
-    public ParallaxBackground(Context context, ViewGroup layout, long duration,
-                              int screenWidth, int screenHeight) {
+    public CloudScroller(Context context, ViewGroup layout, long duration,
+                         int screenWidth, int screenHeight) {
         this.context = context;
         this.layout = layout;
         this.duration = duration;
@@ -49,8 +49,8 @@ public class ParallaxBackground implements Runnable {
         cloudsImageViewA.setScaleType(ImageView.ScaleType.FIT_XY);
         cloudsImageViewB.setScaleType(ImageView.ScaleType.FIT_XY);
 
-        cloudsImageViewA.setZ(-1);
-        cloudsImageViewB.setZ(-1);
+//        cloudsImageViewA.setZ(-1);
+//        cloudsImageViewB.setZ(-1);
 
         cloudsImageViewA.setAlpha(0.5f);
         cloudsImageViewB.setAlpha(0.5f);
