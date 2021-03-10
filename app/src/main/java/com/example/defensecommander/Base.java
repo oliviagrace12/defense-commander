@@ -10,11 +10,11 @@ public class Base {
         this.baseImageView = baseImageView;
     }
 
-    public double getX() {
-        return baseImageView.getX() + (0.5 * baseImageView.getWidth());
+    public float getX() {
+        return baseImageView.getX() + (0.5f * baseImageView.getWidth());
     }
 
-    public double getY() {
-        return baseImageView.getY() + (0.5 * baseImageView.getHeight());
+    public float getY() {
+        return baseImageView.getY() + (0.5f * baseImageView.getHeight());
     }
 }

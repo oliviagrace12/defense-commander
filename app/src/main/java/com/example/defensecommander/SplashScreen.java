@@ -21,6 +21,13 @@ public class SplashScreen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
 
         SoundPlayer.getInstance().setupLoopingSound(this, "background", R.raw.background);
+        SoundPlayer.getInstance().setupSound(this, "interceptor_blast", R.raw.interceptor_blast);
+        SoundPlayer.getInstance().setupSound(this, "interceptor_hit_missile", R.raw.interceptor_hit_missile);
+        SoundPlayer.getInstance().setupSound(this, "launch_interceptor", R.raw.launch_interceptor);
+        SoundPlayer.getInstance().setupSound(this, "launch_missile", R.raw.launch_missile);
+        SoundPlayer.getInstance().setupSound(this, "missile_miss", R.raw.missile_miss);
+        SoundPlayer.getInstance().setupSound(this, "base_blast", R.raw.base_blast);
+
 
         titleImageView = findViewById(R.id.splashTitle);
         fadeInTitle();

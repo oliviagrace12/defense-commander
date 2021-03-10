@@ -37,7 +37,7 @@ public class MissileMaker implements Runnable {
 
     private void makeMissile() {
         missileCount++;
-        long missileTime = (long) ((delay * 0.5) + (Math.random() * delay));
+        long missileTime = (long) ((delay * 1.5));
         final Missile missile = new Missile(missileTime, mainActivity);
         activeMissiles.add(missile);
         final AnimatorSet animatorSet = missile.createAnimatorSet();

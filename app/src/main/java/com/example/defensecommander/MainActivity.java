@@ -68,7 +68,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleTouch(float x, float y) {
-        // todo
+        if (bases.isEmpty()) {
+            return;
+        }
+        Base closestBase = findClosestBaseToTouch(x, y);
+        launchInterceptor(x, y, closestBase);
+
+    }
+
+    private void launchInterceptor(float x, float y, Base closestBase) {
+        Interceptor interceptor = new Interceptor(
+                this, closestBase.getX(), closestBase.getY(), x, y);
+        interceptor.launch();
+    }
+
+    private Base findClosestBaseToTouch(float touchX, float touchY) {
+        Base closestBase = null;
+        double closestBaseDistance = Double.MAX_VALUE;
+        for (Base base : bases) {
+            double distance = getDistance(touchX, touchY, base.getX(), base.getY());
+            if (distance < closestBaseDistance) {
+                closestBaseDistance = distance;
+                closestBase = base;
+            }
+        }
+        return closestBase;
+    }
+
+    public double getDistance(float x1, float y1, double x2, double y2) {
+        return Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2));
     }
 
     private void getScreenDimensions() {
