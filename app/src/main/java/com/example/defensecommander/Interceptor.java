@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.media.Image;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
@@ -15,6 +16,8 @@ public class Interceptor {
     private float startY;
     private float endX;
     private float endY;
+    float halfImageWidth;
+    float halfImageHeight;
     private ImageView imageView;
     private AnimatorSet animatorSet;
     private static final double DISTANCE_TIME = 0.75;
@@ -37,8 +40,9 @@ public class Interceptor {
         imageView.setY(startY);
         imageView.setZ(-10);
 
-        float halfImageWidth = imageView.getDrawable().getIntrinsicWidth() * 0.5f;
-        float halfImageHeight = imageView.getDrawable().getIntrinsicHeight() * 0.5f;
+
+        halfImageWidth = imageView.getDrawable().getIntrinsicWidth() * 0.5f;
+        halfImageHeight = imageView.getDrawable().getIntrinsicHeight() * 0.5f;
 
         endX = endX - halfImageWidth;
         endY = endY - halfImageHeight;
@@ -70,20 +74,23 @@ public class Interceptor {
                 makeBlast();
             }
         });
+
         animatorSet.playTogether(xAnimator, yAnimator);
     }
 
     private void makeBlast() {
         SoundPlayer.getInstance().startSound("interceptor_blast");
-        ImageView explodeImageView = new ImageView(mainActivity);
-        explodeImageView.setImageResource(R.drawable.i_explode);
 
-        float offset = explodeImageView.getDrawable().getIntrinsicWidth() / 2f;
-        explodeImageView.setX(endX - offset);
-        explodeImageView.setY(endY - offset);
-        explodeImageView.setZ(-15);
+        ImageView explodeImageView = createExplodeImageView();
         mainActivity.getLayout().addView(explodeImageView);
 
+        ObjectAnimator alphaAnimator = createAlphaAnimator(explodeImageView);
+        alphaAnimator.start();
+
+        mainActivity.applyInterceptorBlast(explodeImageView.getX(), explodeImageView.getY());
+    }
+
+    private ObjectAnimator createAlphaAnimator(ImageView explodeImageView) {
         ObjectAnimator alphaAnimator = ObjectAnimator
                 .ofFloat(explodeImageView, "alpha", 0.0f);
         alphaAnimator.setDuration(3000);
@@ -94,7 +101,19 @@ public class Interceptor {
                 mainActivity.getLayout().removeView(explodeImageView);
             }
         });
-        alphaAnimator.start();
+        return alphaAnimator;
+    }
+
+    private ImageView createExplodeImageView() {
+        ImageView explodeImageView = new ImageView(mainActivity);
+        explodeImageView.setImageResource(R.drawable.i_explode);
+
+        float offset = explodeImageView.getDrawable().getIntrinsicWidth() / 2f;
+        explodeImageView.setX(endX - offset);
+        explodeImageView.setY(endY - offset);
+        explodeImageView.setZ(-15);
+
+        return explodeImageView;
     }
 
     public void launch() {

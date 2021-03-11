@@ -2,17 +2,22 @@ package com.example.defensecommander;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int MISSILE_BLAST_RANGE = 120;
+    private static final int INTERCEPTOR_BLAST_RANGE = 150;
 
     private int screenWidth;
     private int screenHeight;
@@ -20,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
     private List<Base> bases = new ArrayList<>();
     private ViewGroup layout;
     private MissileMaker missileMaker;
-    private static final int INTERCEPTOR_BLAST_RANGE = 150;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -44,10 +48,36 @@ public class MainActivity extends AppCompatActivity {
 
         missileMaker = new MissileMaker(this);
         new Thread(missileMaker).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!bases.isEmpty()) {
+                    continue;
+                }
+                MainActivity.this.runOnUiThread(() -> endGame());
+            }
+        }).start();
     }
 
     public double getDistance(float x1, float y1, float x2, float y2) {
         return Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2));
+    }
+
+    public void applyInterceptorBlast(float interceptorX, float interceptorY) {
+        List<Missile> hitMissiles = new ArrayList<>();
+        for (Missile missile : missileMaker.getActiveMissiles()) {
+            double distance = 
+                    getDistance(missile.getX(), missile.getY(), interceptorX, interceptorY);
+            if (distance < MISSILE_BLAST_RANGE) {
+                hitMissiles.add(missile);
+            }
+        }
+        hitMissiles.forEach(Missile::playInterceptorBlast);
+    }
+
+    public void removeMissile(Missile missile) {
+        layout.removeView(missile.getMissileImageView());
+        missileMaker.removeMissile(missile);
     }
 
     public void applyMissileBlast(Missile missile) {
@@ -56,21 +86,35 @@ public class MainActivity extends AppCompatActivity {
 
         Base hitBase = null;
         for (Base base : bases) {
-            float baseX = base.getX();
-            float baseY = base.getY();
-            double distance = getDistance(missileX, missileY, baseX, baseY);
+            double distance = getDistance(missileX, missileY, base.getX(), base.getY());
             if (distance < INTERCEPTOR_BLAST_RANGE) {
                 SoundPlayer.getInstance().startSound("base_blast");
                 getLayout().removeView(missile.getMissileImageView());
+                missileMaker.removeMissile(missile);
                 base.showHitByMissile();
                 hitBase = base;
             } else {
                 missile.playMissileMissBlast();
+                missileMaker.removeMissile(missile);
             }
         }
         if (hitBase != null) {
             bases.remove(hitBase);
         }
+    }
+
+    private void endGame() {
+        missileMaker.stop();
+        for (Missile activeMissile : missileMaker.getActiveMissiles()) {
+            layout.removeView(activeMissile.getMissileImageView());
+        }
+        missileMaker.removeAllMissiles();
+
+        ImageView endGameImageView = findViewById(R.id.gameOver);
+        ObjectAnimator aAnim =
+                ObjectAnimator.ofFloat(endGameImageView, "alpha", 0, 1);
+        aAnim.setDuration(5500);
+        aAnim.start();
     }
 
     public ViewGroup getLayout() {

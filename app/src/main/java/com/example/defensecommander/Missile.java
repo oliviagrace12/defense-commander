@@ -38,12 +38,16 @@ public class Missile {
         return (float) (190.0f - angle);
     }
 
+    public AnimatorSet getAnimatorSet() {
+        return animatorSet;
+    }
+
     public AnimatorSet createAnimatorSet() {
         Drawable missileDrawable = ContextCompat.getDrawable(mainActivity, R.drawable.missile);
-        mainActivity.runOnUiThread(() -> missileImageView.setImageDrawable(missileDrawable));
+        missileImageView.setImageDrawable(missileDrawable);
 
         int startX = (int) (Math.random() * screenWidth);
-        int endX = (startX + (Math.random() < 0.5 ? 500 : -500));
+        int endX = (int) (Math.random() * screenWidth);
         missileImageView.setRotation(calculateAngle(startX, 0, endX, screenHeight));
         missileImageView.setZ(-1);
 
@@ -103,5 +107,41 @@ public class Missile {
 
     public ImageView getMissileImageView() {
         return missileImageView;
+    }
+
+    public void playInterceptorBlast() {
+        mainActivity.removeMissile(this);
+
+        SoundPlayer.getInstance().startSound("interceptor_hit_missile");
+
+        ImageView explosionImageView = createExplosionImageView();
+        mainActivity.runOnUiThread(() -> mainActivity.getLayout().addView(explosionImageView));
+
+        ObjectAnimator alphaAnimator = createAlphaAnimator(explosionImageView);
+        alphaAnimator.start();
+    }
+
+    private ObjectAnimator createAlphaAnimator(ImageView explodeImageView) {
+        ObjectAnimator alphaAnimator = ObjectAnimator
+                .ofFloat(explodeImageView, "alpha", 0.0f);
+        alphaAnimator.setDuration(3000);
+        alphaAnimator.setInterpolator(new LinearInterpolator());
+        alphaAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mainActivity.getLayout().removeView(explodeImageView);
+            }
+        });
+        return alphaAnimator;
+    }
+
+    private ImageView createExplosionImageView() {
+        ImageView explosionImageView = new ImageView(mainActivity);
+        explosionImageView.setImageResource(R.drawable.explode);
+        explosionImageView.setX(getX());
+        explosionImageView.setY(getY());
+        animatorSet.cancel();
+
+        return explosionImageView;
     }
 }

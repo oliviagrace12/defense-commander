@@ -50,4 +50,20 @@ public class MissileMaker implements Runnable {
     public void removeMissile(Missile missile) {
         activeMissiles.remove(missile);
     }
+
+    public List<Missile> getActiveMissiles() {
+        return activeMissiles;
+    }
+
+    public void removeAllMissiles() {
+        for (Missile missile : activeMissiles) {
+            missile.getAnimatorSet().cancel();
+        }
+        activeMissiles.clear();
+        missileCount = 0;
+    }
+
+    public void stop() {
+        isRunning = false;
+    }
 }
