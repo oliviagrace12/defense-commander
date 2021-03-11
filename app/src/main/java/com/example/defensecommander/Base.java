@@ -1,13 +1,19 @@
 package com.example.defensecommander;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
 public class Base {
 
     private final ImageView baseImageView;
+    private final MainActivity mainActivity;
 
-    public Base(ImageView baseImageView) {
+    public Base(ImageView baseImageView, MainActivity mainActivity) {
         this.baseImageView = baseImageView;
+        this.mainActivity = mainActivity;
     }
 
     public float getX() {
@@ -16,5 +22,28 @@ public class Base {
 
     public float getY() {
         return baseImageView.getY() + (0.5f * baseImageView.getHeight());
+    }
+
+    public void showHitByMissile() {
+        ImageView blastImageView = new ImageView(mainActivity);
+        blastImageView.setImageResource(R.drawable.blast);
+        blastImageView.setX(baseImageView.getX());
+        blastImageView.setY(baseImageView.getY());
+        blastImageView.setRotation((float) (360.0 * Math.random()));
+
+        mainActivity.getLayout().removeView(baseImageView);
+        mainActivity.getLayout().addView(blastImageView);
+
+        ObjectAnimator blastAlphaAnimator = ObjectAnimator
+                .ofFloat(blastImageView, "alpha", 0.0f);
+        blastAlphaAnimator.setInterpolator(new LinearInterpolator());
+        blastAlphaAnimator.setDuration(3000);
+        blastAlphaAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mainActivity.getLayout().removeView(blastImageView);
+            }
+        });
+        blastAlphaAnimator.start();
     }
 }

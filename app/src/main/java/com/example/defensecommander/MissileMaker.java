@@ -1,6 +1,7 @@
 package com.example.defensecommander;
 
 import android.animation.AnimatorSet;
+import android.media.SoundPool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,7 @@ public class MissileMaker implements Runnable {
         final Missile missile = new Missile(missileTime, mainActivity);
         activeMissiles.add(missile);
         final AnimatorSet animatorSet = missile.createAnimatorSet();
+        SoundPlayer.getInstance().startSound("launch_missile");
 
         mainActivity.runOnUiThread(animatorSet::start);
     }

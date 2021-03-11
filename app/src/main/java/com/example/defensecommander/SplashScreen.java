@@ -28,12 +28,11 @@ public class SplashScreen extends AppCompatActivity {
         SoundPlayer.getInstance().setupSound(this, "missile_miss", R.raw.missile_miss);
         SoundPlayer.getInstance().setupSound(this, "base_blast", R.raw.base_blast);
 
-
         titleImageView = findViewById(R.id.splashTitle);
         fadeInTitle();
 
         new Handler().postDelayed(
-                () -> SoundPlayer.getInstance().startSound("background"),1000);
+                () -> SoundPlayer.getInstance().startSound("background"),2000);
 
         new Handler().postDelayed(this::openMainActivity, SPLASH_TIME_OUT);
     }

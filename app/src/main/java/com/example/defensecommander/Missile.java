@@ -4,8 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.graphics.drawable.Drawable;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+
+import androidx.core.content.ContextCompat;
 
 public class Missile {
 
@@ -36,23 +39,23 @@ public class Missile {
     }
 
     public AnimatorSet createAnimatorSet() {
-        mainActivity.runOnUiThread(() -> missileImageView.setImageResource(R.drawable.missile));
+        Drawable missileDrawable = ContextCompat.getDrawable(mainActivity, R.drawable.missile);
+        mainActivity.runOnUiThread(() -> missileImageView.setImageDrawable(missileDrawable));
 
         int startX = (int) (Math.random() * screenWidth);
         int endX = (startX + (Math.random() < 0.5 ? 500 : -500));
         missileImageView.setRotation(calculateAngle(startX, 0, endX, screenHeight));
         missileImageView.setZ(-1);
 
-        ObjectAnimator yAnimator = ObjectAnimator
-                .ofFloat(missileImageView, "y", -200, screenHeight + 200);
+        ObjectAnimator yAnimator = ObjectAnimator.ofFloat(missileImageView, "y",
+                0.0f, screenHeight - missileDrawable.getIntrinsicHeight());
         yAnimator.setInterpolator(new LinearInterpolator());
         yAnimator.setDuration(screenTime);
         yAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mainActivity.runOnUiThread(() -> {
-                    mainActivity.getLayout().removeView(missileImageView);
-                    mainActivity.getMissileMaker().removeMissile(Missile.this);
+                    mainActivity.applyMissileBlast(Missile.this);
                 });
             }
         });
@@ -67,4 +70,38 @@ public class Missile {
         return animatorSet;
     }
 
+    public float getX() {
+        return missileImageView.getX() + (missileImageView.getWidth() / 2f);
+    }
+
+    public float getY() {
+        return missileImageView.getY() + (missileImageView.getHeight() /2f);
+    }
+
+
+    public void playMissileMissBlast() {
+        ImageView blastImageView = new ImageView(mainActivity);
+        blastImageView.setImageResource(R.drawable.explode);
+        blastImageView.setX(missileImageView.getX());
+        blastImageView.setY(missileImageView.getY());
+        blastImageView.setRotation((float) (360.0 * Math.random()));
+
+        mainActivity.getLayout().removeView(missileImageView);
+        mainActivity.getLayout().addView(blastImageView);
+
+        final ObjectAnimator alpha = ObjectAnimator.ofFloat(blastImageView, "alpha", 0.0f);
+        alpha.setInterpolator(new LinearInterpolator());
+        alpha.setDuration(3000);
+        alpha.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mainActivity.getLayout().removeView(blastImageView);
+            }
+        });
+        alpha.start();
+    }
+
+    public ImageView getMissileImageView() {
+        return missileImageView;
+    }
 }

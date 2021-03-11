@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Base> bases = new ArrayList<>();
     private ViewGroup layout;
     private MissileMaker missileMaker;
+    private static final int INTERCEPTOR_BLAST_RANGE = 150;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -45,6 +46,33 @@ public class MainActivity extends AppCompatActivity {
         new Thread(missileMaker).start();
     }
 
+    public double getDistance(float x1, float y1, float x2, float y2) {
+        return Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2));
+    }
+
+    public void applyMissileBlast(Missile missile) {
+        float missileX = missile.getX();
+        float missileY = missile.getY();
+
+        Base hitBase = null;
+        for (Base base : bases) {
+            float baseX = base.getX();
+            float baseY = base.getY();
+            double distance = getDistance(missileX, missileY, baseX, baseY);
+            if (distance < INTERCEPTOR_BLAST_RANGE) {
+                SoundPlayer.getInstance().startSound("base_blast");
+                getLayout().removeView(missile.getMissileImageView());
+                base.showHitByMissile();
+                hitBase = base;
+            } else {
+                missile.playMissileMissBlast();
+            }
+        }
+        if (hitBase != null) {
+            bases.remove(hitBase);
+        }
+    }
+
     public ViewGroup getLayout() {
         return layout;
     }
@@ -62,9 +90,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createBases() {
-        bases.add(new Base(findViewById(R.id.baseLeft)));
-        bases.add(new Base(findViewById(R.id.baseCenter)));
-        bases.add(new Base(findViewById(R.id.baseRight)));
+        bases.add(new Base(findViewById(R.id.baseLeft), this));
+        bases.add(new Base(findViewById(R.id.baseCenter), this));
+        bases.add(new Base(findViewById(R.id.baseRight), this));
     }
 
     private void handleTouch(float x, float y) {
@@ -73,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
         }
         Base closestBase = findClosestBaseToTouch(x, y);
         launchInterceptor(x, y, closestBase);
-
     }
 
     private void launchInterceptor(float x, float y, Base closestBase) {
@@ -93,10 +120,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return closestBase;
-    }
-
-    public double getDistance(float x1, float y1, double x2, double y2) {
-        return Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2));
     }
 
     private void getScreenDimensions() {
