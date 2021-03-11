@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private List<Base> bases = new ArrayList<>();
     private ViewGroup layout;
     private MissileMaker missileMaker;
+    private TextView scoreTextView;
+    private int score = 0;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         getScreenDimensions();
 
         layout = findViewById(R.id.constraintLayout);
+        scoreTextView = findViewById(R.id.score);
         cloudScroller = new CloudScroller(
                 this, layout, 60000, screenWidth, screenHeight);
         layout.setOnTouchListener((view, motionEvent) -> {
@@ -70,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
                     getDistance(missile.getX(), missile.getY(), interceptorX, interceptorY);
             if (distance < MISSILE_BLAST_RANGE) {
                 hitMissiles.add(missile);
+                score++;
+                scoreTextView.setText(String.valueOf(score));
             }
         }
         hitMissiles.forEach(Missile::playInterceptorBlast);

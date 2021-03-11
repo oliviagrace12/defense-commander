@@ -44,7 +44,7 @@ public class Missile {
 
     public AnimatorSet createAnimatorSet() {
         Drawable missileDrawable = ContextCompat.getDrawable(mainActivity, R.drawable.missile);
-        missileImageView.setImageDrawable(missileDrawable);
+        mainActivity.runOnUiThread(() -> missileImageView.setImageDrawable(missileDrawable));
 
         int startX = (int) (Math.random() * screenWidth);
         int endX = (int) (Math.random() * screenWidth);
