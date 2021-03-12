@@ -1,14 +1,22 @@
 package com.example.defensecommander;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -70,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     public void applyInterceptorBlast(float interceptorX, float interceptorY) {
         List<Missile> hitMissiles = new ArrayList<>();
         for (Missile missile : missileMaker.getActiveMissiles()) {
-            double distance = 
+            double distance =
                     getDistance(missile.getX(), missile.getY(), interceptorX, interceptorY);
             if (distance < MISSILE_BLAST_RANGE) {
                 hitMissiles.add(missile);
@@ -121,6 +129,54 @@ public class MainActivity extends AppCompatActivity {
                 ObjectAnimator.ofFloat(endGameImageView, "alpha", 0, 1);
         aAnim.setDuration(5500);
         aAnim.start();
+
+        new Handler().postDelayed(() -> handleScores(), 8500);
+    }
+
+    private void handleScores() {
+        // get top 10 scores from db
+        // if (inTopTen(score)) {
+           openTopScoreDialogue();
+        // } else {
+//        openScoresActivity();
+        // }
+    }
+
+    private void openTopScoreDialogue() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        EditText userInitialsEditText = buildEnterUserInitialsEditText();
+        builder.setView(userInitialsEditText);
+        builder.setTitle("You are a Top-Player!");
+        builder.setMessage("Please enter your initials (up to 3 characters):");
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            enterScoreInDatabase(userInitialsEditText.getText().toString());
+//            openScoresActivity();
+        });
+        builder.setNegativeButton("CANCEL", (dialog, which) -> {
+            new Thread(new TopTenScoreDatabaseHandler(this)).start();
+        });
+
+        builder.create().show();
+    }
+
+    private void enterScoreInDatabase(String userInitials) {
+        // todo
+    }
+
+    public void openScoresActivity(ArrayList<ScoreEntry> scoreEntries) {
+        Intent intent = new Intent(this, ScoreActivity.class);
+        intent.putExtra("scoreEntries", scoreEntries);
+        startActivity(intent);
+        finish();
+    }
+
+    public EditText buildEnterUserInitialsEditText() {
+        EditText userInitials = new EditText(this);
+        userInitials.setInputType(InputType.TYPE_CLASS_TEXT);
+        userInitials.setGravity(Gravity.CENTER_HORIZONTAL);
+        userInitials.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
+
+        return userInitials;
     }
 
     public ViewGroup getLayout() {
