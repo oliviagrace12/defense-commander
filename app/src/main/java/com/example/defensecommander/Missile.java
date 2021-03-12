@@ -111,6 +111,7 @@ public class Missile {
 
     public void playInterceptorBlast() {
         mainActivity.removeMissile(this);
+        animatorSet.cancel();
 
         SoundPlayer.getInstance().startSound("interceptor_hit_missile");
 

@@ -4,10 +4,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+
+import androidx.core.content.ContextCompat;
 
 public class Interceptor {
 
@@ -81,13 +84,18 @@ public class Interceptor {
     private void makeBlast() {
         SoundPlayer.getInstance().startSound("interceptor_blast");
 
-        ImageView explodeImageView = createExplodeImageView();
-        mainActivity.getLayout().addView(explodeImageView);
+        Drawable explosionDrawable = ContextCompat.getDrawable(mainActivity, R.drawable.i_explode);
+
+        ImageView explodeImageView = createExplodeImageView(explosionDrawable);
+        mainActivity.runOnUiThread(() -> mainActivity.getLayout().addView(explodeImageView));
 
         ObjectAnimator alphaAnimator = createAlphaAnimator(explodeImageView);
         alphaAnimator.start();
 
-        mainActivity.applyInterceptorBlast(explodeImageView.getX(), explodeImageView.getY());
+        float centerX = explodeImageView.getX() + (explosionDrawable.getIntrinsicWidth() / 2f);
+        float centerY = explodeImageView.getY() + (explosionDrawable.getIntrinsicHeight() / 2f);
+
+        mainActivity.applyInterceptorBlast(centerX, centerY);
     }
 
     private ObjectAnimator createAlphaAnimator(ImageView explodeImageView) {
@@ -104,9 +112,9 @@ public class Interceptor {
         return alphaAnimator;
     }
 
-    private ImageView createExplodeImageView() {
+    private ImageView createExplodeImageView(Drawable missileDrawable) {
         ImageView explodeImageView = new ImageView(mainActivity);
-        explodeImageView.setImageResource(R.drawable.i_explode);
+        mainActivity.runOnUiThread(() -> explodeImageView.setImageDrawable(missileDrawable));
 
         float offset = explodeImageView.getDrawable().getIntrinsicWidth() / 2f;
         explodeImageView.setX(endX - offset);

@@ -25,6 +25,8 @@ public class Base {
     }
 
     public void showHitByMissile() {
+        SoundPlayer.getInstance().startSound("base_blast");
+
         ImageView blastImageView = new ImageView(mainActivity);
         blastImageView.setImageResource(R.drawable.blast);
         blastImageView.setX(baseImageView.getX());

@@ -18,7 +18,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final int MISSILE_BLAST_RANGE = 120;
-    private static final int INTERCEPTOR_BLAST_RANGE = 150;
+    private static final int INTERCEPTOR_BLAST_RANGE = 250;
 
     private int screenWidth;
     private int screenHeight;
@@ -94,9 +94,9 @@ public class MainActivity extends AppCompatActivity {
         for (Base base : bases) {
             double distance = getDistance(missileX, missileY, base.getX(), base.getY());
             if (distance < INTERCEPTOR_BLAST_RANGE) {
-                SoundPlayer.getInstance().startSound("base_blast");
-                getLayout().removeView(missile.getMissileImageView());
+                missile.playMissileMissBlast();
                 missileMaker.removeMissile(missile);
+
                 base.showHitByMissile();
                 hitBase = base;
             } else {
