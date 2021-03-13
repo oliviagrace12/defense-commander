@@ -3,8 +3,11 @@ package com.example.defensecommander;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.graphics.drawable.Drawable;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+
+import androidx.core.content.ContextCompat;
 
 public class Base {
 
@@ -27,10 +30,12 @@ public class Base {
     public void showHitByMissile() {
         SoundPlayer.getInstance().startSound("base_blast");
 
+        Drawable baseBlastDrawable = ContextCompat.getDrawable(mainActivity, R.drawable.blast);
+
         ImageView blastImageView = new ImageView(mainActivity);
-        blastImageView.setImageResource(R.drawable.blast);
-        blastImageView.setX(baseImageView.getX());
-        blastImageView.setY(baseImageView.getY());
+        blastImageView.setImageDrawable(baseBlastDrawable);
+        blastImageView.setX(getX() - (baseBlastDrawable.getIntrinsicWidth() / 2f));
+        blastImageView.setY(getY() - (baseBlastDrawable.getIntrinsicHeight() / 2f));
         blastImageView.setRotation((float) (360.0 * Math.random()));
 
         mainActivity.getLayout().removeView(baseImageView);

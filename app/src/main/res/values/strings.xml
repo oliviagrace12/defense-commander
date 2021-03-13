@@ -3,7 +3,7 @@
     <string name="background_sound">background</string>
     <string name="top_players">Top Players</string>
     <string name="exit">Exit</string>
-    <string name="scorecard_title">#\t\tInit\t\tLevel\t\tScore\t\tDate/Time</string>
+    <string name="scorecard_title">#\t\t\tInit\t\t\tLevel\t\t\tScore\t\t\tDate/Time</string>
     <string name="jdbc_driver">com.mysql.jdbc.Driver</string>
     <string name="db_url">jdbc:mysql://christopherhield.com:3306/chri5558_missile_defense</string>
     <string name="db_user">chri5558_student</string>
