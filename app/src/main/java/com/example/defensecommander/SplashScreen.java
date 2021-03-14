@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
 public class SplashScreen extends AppCompatActivity {
@@ -51,16 +52,16 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void fadeInTitle() {
-        ObjectAnimator aAnim =
+        ObjectAnimator alphaAnimator =
                 ObjectAnimator.ofFloat(titleImageView, "alpha", 0, 1);
-        aAnim.setDuration(5500);
-        aAnim.start();
+        alphaAnimator.setInterpolator(new LinearInterpolator());
+        alphaAnimator.setDuration(5500);
+        alphaAnimator.start();
     }
 
     private void openMainActivity() {
         Intent intent = new Intent(SplashScreen.this, MainActivity.class);
         startActivity(intent);
-//        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         finish();
     }
 }
