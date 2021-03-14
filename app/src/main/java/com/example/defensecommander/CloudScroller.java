@@ -1,5 +1,6 @@
 package com.example.defensecommander;
 
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.BitmapFactory;
@@ -37,6 +38,22 @@ public class CloudScroller implements Runnable {
 
         cloudsImageViewA = new ImageView(context);
         cloudsImageViewB = new ImageView(context);
+
+        final ObjectAnimator alpha1 = ObjectAnimator
+                .ofFloat(cloudsImageViewA, "alpha", 0.3f, 1.0f);
+        alpha1.setInterpolator(new LinearInterpolator());
+        alpha1.setRepeatCount(ValueAnimator.INFINITE);
+        alpha1.setRepeatMode(ValueAnimator.REVERSE);
+        alpha1.setDuration(4000);
+        alpha1.start();
+
+        final ObjectAnimator alpha2 = ObjectAnimator
+                .ofFloat(cloudsImageViewB, "alpha", 0.3f, 1.0f);
+        alpha2.setInterpolator(new LinearInterpolator());
+        alpha2.setRepeatCount(ValueAnimator.INFINITE);
+        alpha2.setRepeatMode(ValueAnimator.REVERSE);
+        alpha2.setDuration(4000);
+        alpha2.start();
 
         cloudsImageViewA.setLayoutParams(layoutParams);
         cloudsImageViewB.setLayoutParams(layoutParams);
