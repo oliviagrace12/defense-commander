@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private int screenWidth;
     private int screenHeight;
     private CloudScroller cloudScroller;
-    private List<Base> bases = new ArrayList<>();
+    private final List<Base> bases = new ArrayList<>();
     private ViewGroup layout;
     private MissileMaker missileMaker;
     private TextView scoreTextView;
@@ -108,6 +108,18 @@ public class MainActivity extends AppCompatActivity {
             missile.setHit(true);
             missile.playInterceptorHitMissileBlast();
         });
+
+        Base hitBase = null;
+        for (Base base : bases) {
+            double distance = getDistance(interceptorX, interceptorY, base.getX(), base.getY());
+            if (distance < INTERCEPTOR_BLAST_RANGE) {
+                base.showHitByMissile();
+                hitBase = base;
+            }
+        }
+        if (hitBase != null) {
+            bases.remove(hitBase);
+        }
     }
 
     public void removeMissile(Missile missile) {
@@ -149,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         aAnim.setDuration(5500);
         aAnim.start();
 
-        new Handler().postDelayed(() -> handleScores(), 8500);
+        new Handler().postDelayed(this::handleScores, 8500);
     }
 
     private void handleScores() {
@@ -163,9 +175,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setView(userInitialsEditText);
         builder.setTitle("You are a Top-Player!");
         builder.setMessage("Please enter your initials (up to 3 characters):");
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            enterScoreInDatabase(userInitialsEditText.getText().toString());
-        });
+        builder.setPositiveButton("OK", (dialog, which) -> enterScoreInDatabase(userInitialsEditText.getText().toString()));
         builder.setNegativeButton("CANCEL", (dialog, which) -> new Thread(
                 new TopTenScoreDatabaseHandler(this))
                 .start()
@@ -207,10 +217,6 @@ public class MainActivity extends AppCompatActivity {
 
     public int getScreenHeight() {
         return screenHeight;
-    }
-
-    public MissileMaker getMissileMaker() {
-        return missileMaker;
     }
 
     private void createBases() {
