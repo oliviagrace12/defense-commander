@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +26,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     private static final int MISSILE_BLAST_RANGE = 250;
     private static final int INTERCEPTOR_BLAST_RANGE = 120;
 
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private int screenHeight;
     private CloudScroller cloudScroller;
     private final List<Base> bases = new ArrayList<>();
+    private final List<Interceptor> interceptors = new ArrayList<>();
     private ViewGroup layout;
     private MissileMaker missileMaker;
     private TextView scoreTextView;
@@ -234,9 +237,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void launchInterceptor(float x, float y, Base closestBase) {
-        Interceptor interceptor = new Interceptor(
-                this, closestBase.getX(), closestBase.getY(), x, y);
-        interceptor.launch();
+        if (interceptors.size() < 3) {
+            Interceptor interceptor = new Interceptor(
+                    this, closestBase.getX(), closestBase.getY(), x, y);
+            interceptors.add(interceptor);
+            interceptor.launch();
+        } else {
+            Log.i(TAG, "launchInterceptor: Cannot launch more than 3 at once");
+        }
+    }
+
+    public void removeInterceptor(Interceptor interceptor) {
+        layout.removeView(interceptor.getImageView());
+        interceptors.remove(interceptor);
     }
 
     private Base findClosestBaseToTouch(float touchX, float touchY) {

@@ -86,7 +86,7 @@ public class Interceptor {
         Drawable explosionDrawable = ContextCompat.getDrawable(mainActivity, R.drawable.i_explode);
 
         ImageView explodeImageView = createExplodeImageView(explosionDrawable);
-        mainActivity.runOnUiThread(() -> mainActivity.getLayout().removeView(imageView));
+        mainActivity.runOnUiThread(() -> mainActivity.removeInterceptor(this));
         mainActivity.runOnUiThread(() -> mainActivity.getLayout().addView(explodeImageView));
         ObjectAnimator alphaAnimator = createAlphaAnimator(explodeImageView);
         alphaAnimator.start();
@@ -132,5 +132,9 @@ public class Interceptor {
         // Keep angle between 0 and 360
         angle = angle + Math.ceil(-angle / 360) * 360;
         return (float) (190.0f - angle);
+    }
+
+    public ImageView getImageView() {
+        return imageView;
     }
 }
