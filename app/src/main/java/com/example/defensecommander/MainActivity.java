@@ -171,7 +171,9 @@ public class MainActivity extends AppCompatActivity {
                 .start()
         );
 
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     private void enterScoreInDatabase(String userInitials) {

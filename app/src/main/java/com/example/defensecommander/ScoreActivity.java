@@ -23,6 +23,7 @@ public class ScoreActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         makeFullscreen();
+        SoundPlayer.getInstance().startSound(getString(R.string.background_sound));
         setContentView(R.layout.activity_score);
 
         ArrayList<ScoreEntry> scoreEntries =
@@ -103,6 +104,7 @@ public class ScoreActivity extends AppCompatActivity {
     }
 
     public void closeApp(View view) {
+        SoundPlayer.getInstance().stopSound("background");
         finish();
     }
 }
