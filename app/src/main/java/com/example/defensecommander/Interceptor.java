@@ -73,7 +73,6 @@ public class Interceptor {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mainActivity.getLayout().removeView(imageView);
                 makeBlast();
             }
         });
@@ -87,8 +86,8 @@ public class Interceptor {
         Drawable explosionDrawable = ContextCompat.getDrawable(mainActivity, R.drawable.i_explode);
 
         ImageView explodeImageView = createExplodeImageView(explosionDrawable);
+        mainActivity.runOnUiThread(() -> mainActivity.getLayout().removeView(imageView));
         mainActivity.runOnUiThread(() -> mainActivity.getLayout().addView(explodeImageView));
-
         ObjectAnimator alphaAnimator = createAlphaAnimator(explodeImageView);
         alphaAnimator.start();
 
@@ -117,8 +116,8 @@ public class Interceptor {
         mainActivity.runOnUiThread(() -> explodeImageView.setImageDrawable(missileDrawable));
 
         float offset = explodeImageView.getDrawable().getIntrinsicWidth() / 2f;
-        explodeImageView.setX(endX - offset);
-        explodeImageView.setY(endY - offset);
+        explodeImageView.setX(imageView.getX() + (imageView.getWidth() / 2f) - offset);
+        explodeImageView.setY(imageView.getY() + (imageView.getHeight() / 2f) - offset);
         explodeImageView.setZ(-15);
 
         return explodeImageView;

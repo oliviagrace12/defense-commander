@@ -40,7 +40,7 @@ public class CloudScroller implements Runnable {
         cloudsImageViewB = new ImageView(context);
 
         final ObjectAnimator alpha1 = ObjectAnimator
-                .ofFloat(cloudsImageViewA, "alpha", 0.3f, 1.0f);
+                .ofFloat(cloudsImageViewA, "alpha", 0.5f, 0.98f);
         alpha1.setInterpolator(new LinearInterpolator());
         alpha1.setRepeatCount(ValueAnimator.INFINITE);
         alpha1.setRepeatMode(ValueAnimator.REVERSE);
@@ -48,7 +48,7 @@ public class CloudScroller implements Runnable {
         alpha1.start();
 
         final ObjectAnimator alpha2 = ObjectAnimator
-                .ofFloat(cloudsImageViewB, "alpha", 0.3f, 1.0f);
+                .ofFloat(cloudsImageViewB, "alpha", 0.5f, 0.98f);
         alpha2.setInterpolator(new LinearInterpolator());
         alpha2.setRepeatCount(ValueAnimator.INFINITE);
         alpha2.setRepeatMode(ValueAnimator.REVERSE);
@@ -66,8 +66,8 @@ public class CloudScroller implements Runnable {
         cloudsImageViewA.setScaleType(ImageView.ScaleType.FIT_XY);
         cloudsImageViewB.setScaleType(ImageView.ScaleType.FIT_XY);
 
-//        cloudsImageViewA.setZ(-1);
-//        cloudsImageViewB.setZ(-1);
+        cloudsImageViewA.setZ(-1);
+        cloudsImageViewB.setZ(-1);
 
         cloudsImageViewA.setAlpha(0.5f);
         cloudsImageViewB.setAlpha(0.5f);

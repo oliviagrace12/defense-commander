@@ -50,7 +50,7 @@ public class Missile {
         int startX = (int) (Math.random() * screenWidth);
         int endX = (int) (Math.random() * screenWidth);
         missileImageView.setRotation(calculateAngle(startX, 0, endX, screenHeight));
-        missileImageView.setZ(-1);
+        missileImageView.setZ(-5);
 
         ObjectAnimator yAnimator = ObjectAnimator.ofFloat(missileImageView, "y",
                 0.0f, screenHeight - missileDrawable.getIntrinsicHeight());
@@ -88,12 +88,7 @@ public class Missile {
 
     public void playMissileMissBlast() {
         animatorSet.cancel();
-        ImageView blastImageView = new ImageView(mainActivity);
-        blastImageView.setImageResource(R.drawable.explode);
-        blastImageView.setX(missileImageView.getX());
-        blastImageView.setY(missileImageView.getY());
-        blastImageView.setRotation((float) (360.0 * Math.random()));
-
+        ImageView blastImageView = createExplosionImageView();
         mainActivity.getLayout().removeView(missileImageView);
         mainActivity.getLayout().addView(blastImageView);
 
@@ -104,11 +99,6 @@ public class Missile {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mainActivity.getLayout().removeView(blastImageView);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
             }
         });
         alpha.start();
@@ -132,26 +122,28 @@ public class Missile {
     }
 
     private ObjectAnimator createAlphaAnimator(ImageView explodeImageView) {
-        ObjectAnimator alphaAnimator = ObjectAnimator
+        ObjectAnimator alpha = ObjectAnimator
                 .ofFloat(explodeImageView, "alpha", 0.0f);
-        alphaAnimator.setDuration(3000);
-        alphaAnimator.setInterpolator(new LinearInterpolator());
-        alphaAnimator.addListener(new AnimatorListenerAdapter() {
+        alpha.setDuration(3000);
+        alpha.setInterpolator(new LinearInterpolator());
+        alpha.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mainActivity.getLayout().removeView(explodeImageView);
             }
         });
-        return alphaAnimator;
+        return alpha;
     }
 
     private ImageView createExplosionImageView() {
-        ImageView explosionImageView = new ImageView(mainActivity);
-        explosionImageView.setImageResource(R.drawable.explode);
-        explosionImageView.setX(getX());
-        explosionImageView.setY(getY());
+        ImageView blastImageView = new ImageView(mainActivity);
+        blastImageView.setImageResource(R.drawable.explode);
+        blastImageView.setX(missileImageView.getX());
+        blastImageView.setY(missileImageView.getY());
+        blastImageView.setRotation((float) (360.0 * Math.random()));
+        blastImageView.setZ(-15);
 
-        return explosionImageView;
+        return blastImageView;
     }
 
     public void setHit(boolean hit) {
