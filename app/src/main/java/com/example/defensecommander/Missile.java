@@ -18,6 +18,7 @@ public class Missile {
     private final MainActivity mainActivity;
     private ImageView missileImageView;
     private final AnimatorSet animatorSet = new AnimatorSet();
+    private boolean hit = false;
 
     public Missile(long screenTime, MainActivity mainActivity) {
         this.screenTime = screenTime;
@@ -59,7 +60,9 @@ public class Missile {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mainActivity.runOnUiThread(() -> {
-                    mainActivity.applyMissileBlast(Missile.this);
+                    if (!hit) {
+                        mainActivity.applyMissileBlast(Missile.this);
+                    }
                 });
             }
         });
@@ -79,11 +82,12 @@ public class Missile {
     }
 
     public float getY() {
-        return missileImageView.getY() + (missileImageView.getHeight() /2f);
+        return missileImageView.getY() + (missileImageView.getHeight() / 2f);
     }
 
 
     public void playMissileMissBlast() {
+        animatorSet.cancel();
         ImageView blastImageView = new ImageView(mainActivity);
         blastImageView.setImageResource(R.drawable.explode);
         blastImageView.setX(missileImageView.getX());
@@ -101,6 +105,11 @@ public class Missile {
             public void onAnimationEnd(Animator animation) {
                 mainActivity.getLayout().removeView(blastImageView);
             }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
         });
         alpha.start();
     }
@@ -109,7 +118,7 @@ public class Missile {
         return missileImageView;
     }
 
-    public void playInterceptorBlast() {
+    public void playInterceptorHitMissileBlast() {
         mainActivity.removeMissile(this);
         animatorSet.cancel();
 
@@ -141,8 +150,11 @@ public class Missile {
         explosionImageView.setImageResource(R.drawable.explode);
         explosionImageView.setX(getX());
         explosionImageView.setY(getY());
-        animatorSet.cancel();
 
         return explosionImageView;
+    }
+
+    public void setHit(boolean hit) {
+        this.hit = hit;
     }
 }

@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -99,7 +98,10 @@ public class MainActivity extends AppCompatActivity {
                 scoreTextView.setText(String.valueOf(score));
             }
         }
-        hitMissiles.forEach(Missile::playInterceptorBlast);
+        hitMissiles.forEach(missile -> {
+            missile.setHit(true);
+            missile.playInterceptorHitMissileBlast();
+        });
     }
 
     public void removeMissile(Missile missile) {
@@ -115,15 +117,13 @@ public class MainActivity extends AppCompatActivity {
         for (Base base : bases) {
             double distance = getDistance(missileX, missileY, base.getX(), base.getY());
             if (distance < MISSILE_BLAST_RANGE) {
-                missile.playMissileMissBlast();
-                missileMaker.removeMissile(missile);
                 base.showHitByMissile();
                 hitBase = base;
             } else {
                 SoundPlayer.getInstance().startSound("missile_miss");
-                missile.playMissileMissBlast();
-                missileMaker.removeMissile(missile);
             }
+            missile.playMissileMissBlast();
+            missileMaker.removeMissile(missile);
         }
         if (hitBase != null) {
             bases.remove(hitBase);
