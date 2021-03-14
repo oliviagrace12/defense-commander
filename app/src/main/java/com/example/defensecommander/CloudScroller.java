@@ -48,7 +48,7 @@ public class CloudScroller implements Runnable {
         alpha1.start();
 
         final ObjectAnimator alpha2 = ObjectAnimator
-                .ofFloat(cloudsImageViewB, "alpha", 0.5f, 0.98f);
+                .ofFloat(cloudsImageViewB, "alpha", 0.25f, 0.95f);
         alpha2.setInterpolator(new LinearInterpolator());
         alpha2.setRepeatCount(ValueAnimator.INFINITE);
         alpha2.setRepeatMode(ValueAnimator.REVERSE);

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputFilter;
@@ -46,9 +47,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getScreenDimensions();
 
+        Typeface customFont = Typeface.createFromAsset(getAssets(), "fonts/RobotoMono-VariableFont_wght.ttf");
+
         scoreTextView = findViewById(R.id.score);
         levelTextView = findViewById(R.id.level);
         levelTextView.setText(getString(R.string.level, level));
+
+        scoreTextView.setTypeface(customFont);
+        levelTextView.setTypeface(customFont);
 
         layout = findViewById(R.id.constraintLayout);
         layout.setOnTouchListener((view, motionEvent) -> {
