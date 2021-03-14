@@ -8,4 +8,5 @@
     <string name="db_url">jdbc:mysql://christopherhield.com:3306/chri5558_missile_defense</string>
     <string name="db_user">chri5558_student</string>
     <string name="db_pass">ABC.123</string>
+    <string name="level">Level %d</string>
 </resources>

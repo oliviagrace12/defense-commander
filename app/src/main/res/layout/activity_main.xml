@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Level 1"
+        android:text="@string/level"
         android:textColor="@color/text_green"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"

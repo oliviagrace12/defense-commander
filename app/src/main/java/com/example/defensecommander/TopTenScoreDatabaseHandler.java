@@ -17,6 +17,12 @@ public class TopTenScoreDatabaseHandler implements Runnable {
 
     private MainActivity mainActivity;
     private Connection connection;
+    private Integer score = null;
+
+    public TopTenScoreDatabaseHandler(MainActivity mainActivity, Integer score) {
+        this.mainActivity = mainActivity;
+        this.score = score;
+    }
 
     public TopTenScoreDatabaseHandler(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -44,7 +50,11 @@ public class TopTenScoreDatabaseHandler implements Runnable {
                 scoreEntries.add(new ScoreEntry(dateTimeMillis, initials, score, level));
             }
 
-            mainActivity.runOnUiThread(() -> mainActivity.openScoresActivity(scoreEntries));
+            if (score != null && score > scoreEntries.get(9).getScore()) {
+                mainActivity.runOnUiThread(() -> mainActivity.openTopScoreDialogue());
+            } else {
+                mainActivity.runOnUiThread(() -> mainActivity.openScoresActivity(scoreEntries));
+            }
         } catch (ClassNotFoundException | SQLException e) {
             Log.e(TAG, "run: " + e.getLocalizedMessage());
         }

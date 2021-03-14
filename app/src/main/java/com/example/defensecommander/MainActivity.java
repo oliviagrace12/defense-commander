@@ -25,8 +25,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int MISSILE_BLAST_RANGE = 120;
-    private static final int INTERCEPTOR_BLAST_RANGE = 250;
+    private static final int MISSILE_BLAST_RANGE = 250;
+    private static final int INTERCEPTOR_BLAST_RANGE = 120;
 
     private int screenWidth;
     private int screenHeight;
@@ -35,7 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private ViewGroup layout;
     private MissileMaker missileMaker;
     private TextView scoreTextView;
+    private TextView levelTextView;
     private int score = 0;
+    private int level = 1;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -45,10 +47,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getScreenDimensions();
 
-        layout = findViewById(R.id.constraintLayout);
         scoreTextView = findViewById(R.id.score);
-        cloudScroller = new CloudScroller(
-                this, layout, 60000, screenWidth, screenHeight);
+        levelTextView = findViewById(R.id.level);
+        levelTextView.setText(getString(R.string.level, level));
+
+        layout = findViewById(R.id.constraintLayout);
         layout.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 handleTouch(motionEvent.getX(), motionEvent.getY());
@@ -56,19 +59,29 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
+        cloudScroller = new CloudScroller(
+                this, layout, 60000, screenWidth, screenHeight);
+
         createBases();
 
         missileMaker = new MissileMaker(this);
         new Thread(missileMaker).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!bases.isEmpty()) {
-                    continue;
-                }
-                MainActivity.this.runOnUiThread(() -> endGame());
+
+        setUpGameLoop();
+    }
+
+    private void setUpGameLoop() {
+        new Thread(() -> {
+            while (!bases.isEmpty()) {
+                continue;
             }
+            MainActivity.this.runOnUiThread(this::endGame);
         }).start();
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+        levelTextView.setText(getString(R.string.level, level));
     }
 
     public double getDistance(float x1, float y1, float x2, float y2) {
@@ -80,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         for (Missile missile : missileMaker.getActiveMissiles()) {
             double distance =
                     getDistance(missile.getX(), missile.getY(), interceptorX, interceptorY);
-            if (distance < MISSILE_BLAST_RANGE) {
+            if (distance < INTERCEPTOR_BLAST_RANGE) {
                 hitMissiles.add(missile);
                 score++;
                 scoreTextView.setText(String.valueOf(score));
@@ -101,13 +114,13 @@ public class MainActivity extends AppCompatActivity {
         Base hitBase = null;
         for (Base base : bases) {
             double distance = getDistance(missileX, missileY, base.getX(), base.getY());
-            if (distance < INTERCEPTOR_BLAST_RANGE) {
+            if (distance < MISSILE_BLAST_RANGE) {
                 missile.playMissileMissBlast();
                 missileMaker.removeMissile(missile);
-
                 base.showHitByMissile();
                 hitBase = base;
             } else {
+                SoundPlayer.getInstance().startSound("missile_miss");
                 missile.playMissileMissBlast();
                 missileMaker.removeMissile(missile);
             }
@@ -134,15 +147,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleScores() {
-        // get top 10 scores from db
-        // if (inTopTen(score)) {
-           openTopScoreDialogue();
-        // } else {
-//        openScoresActivity();
-        // }
+        new Thread(new TopTenScoreDatabaseHandler(this, score))
+                .start();
     }
 
-    private void openTopScoreDialogue() {
+    public void openTopScoreDialogue() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         EditText userInitialsEditText = buildEnterUserInitialsEditText();
         builder.setView(userInitialsEditText);
@@ -150,17 +159,18 @@ public class MainActivity extends AppCompatActivity {
         builder.setMessage("Please enter your initials (up to 3 characters):");
         builder.setPositiveButton("OK", (dialog, which) -> {
             enterScoreInDatabase(userInitialsEditText.getText().toString());
-//            openScoresActivity();
         });
-        builder.setNegativeButton("CANCEL", (dialog, which) -> {
-            new Thread(new TopTenScoreDatabaseHandler(this)).start();
-        });
+        builder.setNegativeButton("CANCEL", (dialog, which) -> new Thread(
+                new TopTenScoreDatabaseHandler(this))
+                .start()
+        );
 
         builder.create().show();
     }
 
     private void enterScoreInDatabase(String userInitials) {
-        // todo
+        new Thread(new EnterScoreDatabaseHandler(this,
+                new ScoreEntry(System.currentTimeMillis(), userInitials, score, level))).start();
     }
 
     public void openScoresActivity(ArrayList<ScoreEntry> scoreEntries) {
